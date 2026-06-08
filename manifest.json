@@ -1,0 +1,21 @@
+{
+  "name": "Ateliê em Dia",
+  "short_name": "Ateliê",
+  "description": "Seus pedidos organizados com carinho",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF5F7",
+  "theme_color": "#FF7BAC",
+  "icons": [
+    {
+      "src": "/icon-atelie-512.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-atelie-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
