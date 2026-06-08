@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ateliê em Dia</title>
+  <meta name="theme-color" content="#FF7BAC">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Ateliê em Dia">
+  <link rel="apple-touch-icon" href="/icon-atelie-512.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--rosa:#FF7BAC;--roxo:#8C7BFF;--off:#FFF5F7;--cinza:#E8E8F3;--sombra:0 8px 20px rgba(0,0,0,0.07);--r:18px;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Poppins',sans-serif;background:radial-gradient(circle at top left,#FFF5F7 0%,#FFE4F0 35%,#F9F0FF 70%,#fff 100%);min-height:100vh;display:flex;justify-content:center;color:#4A4A4A;}
+    .shell{width:100%;max-width:480px;min-height:100vh;background:linear-gradient(180deg,#FFF5F7 0%,#fff 40%,#FFF5F7 100%);box-shadow:0 0 40px rgba(140,123,255,0.13);display:flex;flex-direction:column;}
+    header{padding:16px 18px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+    .brand{display:flex;align-items:center;gap:10px;}
+    .brand img{width:44px;height:44px;border-radius:12px;object-fit:contain;}
+    .brand h1{font-size:16px;font-weight:800;color:var(--roxo);}
+    .brand p{font-size:10px;color:#7a6c9f;}
+    .btn-sair{border:none;border-radius:999px;padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;background:#F0EDFF;color:#7a3a6b;font-family:'Poppins',sans-serif;}
+    main{padding:0 16px 32px;flex:1;}
+    .sec-title{font-size:14px;font-weight:700;color:#7a3a6b;margin:12px 0;}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+    .sum-card{border-radius:18px;padding:13px 12px;box-shadow:var(--sombra);}
+    .sum-card small{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#7a6c9f;display:block;}
+    .sum-val{font-size:21px;font-weight:800;margin-top:4px;color:#3a3a3a;}
+    .sum-tag{display:inline-flex;font-size:10px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.75);color:#7a3a6b;margin-top:5px;}
+    [data-t=open]{background:linear-gradient(135deg,#FFE4F0,#FFF5F7);}
+    [data-t=urgent]{background:linear-gradient(135deg,#FFDFE0,#FFE4F0);}
+    [data-t=recv]{background:linear-gradient(135deg,#FFF9CC,#FFF5F7);}
+    [data-t=got]{background:linear-gradient(135deg,#DFFFEF,#FFF5F7);}
+    .tabs{display:flex;background:rgba(255,255,255,.75);border-radius:999px;padding:3px;margin-bottom:13px;box-shadow:0 4px 12px rgba(0,0,0,.04);}
+    .tab{flex:1;text-align:center;font-size:11px;font-weight:600;padding:8px 4px;border-radius:999px;cursor:pointer;color:#7a6c9f;}
+    .tab.active{background:linear-gradient(90deg,var(--rosa),var(--roxo));color:#fff;box-shadow:0 3px 10px rgba(255,123,172,.4);}
+    .panel{display:none;}.panel.active{display:block;}
+    .orders{display:flex;flex-direction:column;gap:10px;}
+    .ocard{background:#fff;border-radius:var(--r);padding:13px;box-shadow:var(--sombra);font-size:12px;}
+    .ocard-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;}
+    .ocard-client{font-weight:700;color:#7a3a6b;font-size:13px;}
+    .ocard-date{font-size:11px;color:#7a6c9f;}
+    .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px;}
+    .tag{font-size:11px;padding:3px 9px;border-radius:999px;background:#FFF5F7;color:#7a3a6b;}
+    .tag.urg{background:#FFE4E4;color:#c73232;font-weight:700;}
+    .money{display:flex;flex-wrap:wrap;gap:7px;font-size:11px;}
+    .money span{background:#f7f4ff;padding:4px 9px;border-radius:999px;}
+    .money strong{font-weight:700;color:#7a3a6b;}
+    .notes{margin-top:6px;font-size:11px;color:#7a6c9f;font-style:italic;}
+    .card-actions{display:flex;gap:8px;margin-top:10px;}
+    .btn-edit,.btn-del{border:none;border-radius:999px;padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;}
+    .btn-edit{background:#F0EDFF;color:var(--roxo);}
+    .btn-del{background:#FFE4E4;color:#c73232;}
+    .fcard{background:#fff;border-radius:var(--r);padding:15px 14px 18px;box-shadow:var(--sombra);margin-bottom:12px;}
+    .fgroup{margin-bottom:13px;}
+    label.lbl{display:block;font-size:12px;font-weight:600;margin-bottom:4px;color:#7a6c9f;}
+    input[type=text],input[type=date],input[type=number],textarea,select{width:100%;padding:11px 14px;border-radius:999px;border:1px solid var(--cinza);background:#fff;font-family:'Poppins',sans-serif;font-size:13px;outline:none;transition:.2s;}
+    textarea{border-radius:16px;min-height:62px;resize:vertical;}
+    input:focus,textarea:focus{border-color:var(--rosa);box-shadow:0 0 0 2px rgba(255,123,172,.2);}
+    .ilist{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+    .irow{display:grid;grid-template-columns:2fr 1fr 32px;gap:6px;align-items:center;}
+    .ibtn{width:32px;height:32px;border:none;border-radius:50%;font-size:20px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+    .ibtn-add{background:#FFE4F0;color:#C54C7A;margin-top:8px;}
+    .ibtn-del{background:#FFE4E4;color:#c73232;}
+    .total-row{display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:#7a3a6b;margin:10px 0 5px;}
+    .srow{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+    .srow label{border:1px solid #e5d9ff;border-radius:999px;padding:5px 10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-weight:500;color:#7a6c9f;font-size:12px;}
+    .srow input[type=radio]{accent-color:var(--rosa);}
+    .save-row{display:flex;justify-content:flex-end;margin-top:15px;gap:8px;flex-wrap:wrap;}
+    .btn-save{background:linear-gradient(90deg,var(--rosa),var(--roxo));color:#fff;border:none;border-radius:999px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;box-shadow:0 4px 12px rgba(255,123,172,.35);}
+    .btn-cancel{background:#F0EDFF;color:var(--roxo);border:none;border-radius:999px;padding:11px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;display:none;}
+    .wcal{background:#fff;border-radius:var(--r);padding:11px;box-shadow:var(--sombra);margin-bottom:10px;}
+    .wcal-title{font-size:12px;font-weight:700;color:#7a3a6b;margin-bottom:6px;}
+    .week-head{display:flex;justify-content:space-between;font-size:12px;color:#7a6c9f;margin-bottom:8px;}
+    .wdays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+    .dcel{border-radius:10px;padding:5px 3px;text-align:center;background:#FFF5F7;}
+    .dcel .dn{font-size:9px;color:#7a6c9f;}
+    .dcel .dd{font-weight:700;font-size:12px;color:#7a3a6b;}
+    .dcel .dl{font-size:9px;color:#aaa;margin-top:1px;min-height:13px;}
+    .dcel.holiday{background:#FFE4E4;border:1px solid var(--rosa);}
+    .dcel.holiday .dl{color:#c73232;font-weight:700;}
+    .dcel.hasorder{border:1.5px dashed var(--roxo);}
+    .dcel.hasorder .dl{color:var(--roxo);font-weight:700;}
+    .worders{display:flex;flex-direction:column;gap:8px;}
+    .helper{font-size:11px;color:#a08fc7;margin-top:8px;}
+    .msg-vazia{font-size:12px;color:#a08fc7;margin-top:8px;}
+    .pw-wrap{position:relative;margin-bottom:4px;}
+    .pw-wrap input{padding-right:80px;}
+    .pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:none;border-radius:999px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;background:#F0EDFF;color:#7a3a6b;font-family:'Poppins',sans-serif;}
+    .btn-salvar-dados{width:100%;padding:13px;border:none;border-radius:999px;background:linear-gradient(90deg,var(--rosa),var(--roxo));color:#fff;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;}
+    .msg-ok{font-size:12px;color:#3ECFB2;font-weight:600;margin-top:8px;display:none;}
+    .msg-erro{font-size:12px;color:#c73232;font-weight:600;margin-top:8px;display:none;}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="brand">
+      <img src="/icon-atelie-512.png" alt="Ateliê em Dia" onerror="this.style.display='none'">
+      <div>
+        <h1>Ateliê em Dia</h1>
+        <p>Seus pedidos organizados com carinho</p>
+      </div>
+    </div>
+    <button class="btn-sair" id="btnSair">Sair</button>
+  </header>
+  <main>
+    <p class="sec-title">Resumo do ateliê</p>
+    <div class="grid2">
+      <div class="sum-card" data-t="open"><small>Em aberto</small><div class="sum-val" id="rAbertos">0</div><div class="sum-tag">Em produção</div></div>
+      <div class="sum-card" data-t="urgent"><small>Urgentes</small><div class="sum-val" id="rUrgentes">0</div><div class="sum-tag">Próximas entregas</div></div>
+      <div class="sum-card" data-t="recv"><small>A receber</small><div class="sum-val" id="rAReceber">R$ 0,00</div><div class="sum-tag">Pendente</div></div>
+      <div class="sum-card" data-t="got"><small>Recebido</small><div class="sum-val" id="rRecebido">R$ 0,00</div><div class="sum-tag">No caixa</div></div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" data-tab="ativos">📦 Pedidos</div>
+      <div class="tab" data-tab="novo">➕ Novo</div>
+      <div class="tab" data-tab="semana">📅 Semana</div>
+      <div class="tab" data-tab="config">⚙️ Config</div>
+    </div>
+
+    <!-- ABA PEDIDOS -->
+    <div id="panelAtivos" class="panel active">
+      <div class="orders" id="listaOrders"></div>
+      <p class="msg-vazia" id="msgVazia" style="display:none">Nenhum pedido ainda. Use "Novo" para começar.</p>
+    </div>
+
+    <!-- ABA NOVO -->
+    <div id="panelNovo" class="panel">
+      <div class="fcard">
+        <div class="fgroup"><label class="lbl">Nome da cliente</label><input type="text" id="fCliente" placeholder="Ex.: Ana Clara"></div>
+        <div class="fgroup"><label class="lbl">Tema da festa</label><input type="text" id="fTema" placeholder="Ex.: Unicórnio aquarelado"></div>
+        <div class="fgroup"><label class="lbl">Data de entrega</label><input type="date" id="fData"></div>
+        <div class="fgroup">
+          <label class="lbl">Itens pedidos</label>
+          <div class="ilist" id="iList"></div>
+          <button class="ibtn ibtn-add" id="btnAddItem">+</button>
+        </div>
+        <div class="total-row"><span>Total do pedido</span><span id="fTotal">R$ 0,00</span></div>
+        <div class="fgroup">
+          <label class="lbl">Status de pagamento</label>
+          <div class="srow">
+            <label><input type="radio" name="st" value="pendente" checked> Pendente</label>
+            <label><input type="radio" name="st" value="sinal"> Sinal pago</label>
+            <label><input type="radio" name="st" value="total"> Pago total</label>
+          </div>
+        </div>
+        <div class="fgroup" id="campoSinal" style="display:none"><label class="lbl">Valor do sinal (R$)</label><input type="number" id="fSinal" min="0" step="0.01" placeholder="Ex.: 80,00"></div>
+        <div class="fgroup"><label class="lbl">Observações</label><textarea id="fObs" placeholder="Detalhes, combinados, lembretes..."></textarea></div>
+        <div class="save-row">
+          <button class="btn-cancel" id="btnCancelar">Cancelar</button>
+          <button class="btn-save" id="btnSalvar">Salvar pedido ✨</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA SEMANA -->
+    <div id="panelSemana" class="panel">
+      <div class="week-head"><span>Semana do ateliê</span><span id="wPeriodo"></span></div>
+      <div class="wcal"><div class="wcal-title">Entregas da semana</div><div class="wdays" id="wDays"></div></div>
+      <div class="worders" id="wOrders"></div>
+      <p class="helper">Feriados em rosa · Dias com entrega em borda roxa</p>
+    </div>
+
+    <!-- ABA CONFIG -->
+    <div id="panelConfig" class="panel">
+      <div class="fcard">
+        <div class="sec-title">🔒 Alterar senha</div>
+        <div class="fgroup">
+          <label class="lbl">Senha atual</label>
+          <div class="pw-wrap">
+            <input type="password" id="senhaAtual" placeholder="Digite a senha atual">
+            <button type="button" class="pw-toggle" onclick="toggleSenha('senhaAtual',this)">Mostrar</button>
+          </div>
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Nova senha</label>
+          <div class="pw-wrap">
+            <input type="password" id="senhaNova" placeholder="Digite a nova senha">
+            <button type="button" class="pw-toggle" onclick="toggleSenha('senhaNova',this)">Mostrar</button>
+          </div>
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Confirmar nova senha</label>
+          <div class="pw-wrap">
+            <input type="password" id="senhaConfirm" placeholder="Confirme a nova senha">
+            <button type="button" class="pw-toggle" onclick="toggleSenha('senhaConfirm',this)">Mostrar</button>
+          </div>
+        </div>
+        <button class="btn-salvar-dados" id="btnAlterarSenha">🔒 Alterar senha</button>
+        <p class="msg-ok" id="msgSenhaOk">✅ Senha alterada com sucesso!</p>
+        <p class="msg-erro" id="msgSenhaErro"></p>
+      </div>
+    </div>
+
+  </main>
+</div>
+<script>
+  if(localStorage.getItem("atl_auth")!=="1"){
+    window.location.href="/";
+  }
+
+  const KEY="atelie_pedidos";
+  const KEY_SENHA="atl_senha";
+  let editId=null;
+  const fmt=v=>Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  const pv=v=>Number(String(v||0).replace(",","."))||0;
+  const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||"[]");}catch{return[];}};
+  const save=d=>localStorage.setItem(KEY,JSON.stringify(d));
+  function parseLocal(s){const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);}
+  function toISO(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+
+  function getSenhaAtual(){
+    return localStorage.getItem(KEY_SENHA)||"atelie123";
+  }
+
+  document.getElementById("btnSair").onclick=()=>{
+    localStorage.removeItem("atl_auth");
+    window.location.href="/";
+  };
+
+  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+    const name=t.dataset.tab;
+    const panelId="panel"+name.charAt(0).toUpperCase()+name.slice(1);
+    document.getElementById(panelId).classList.add("active");
+    if(name==="semana")renderSemana();
+  });
+
+  const iList=document.getElementById("iList");
+  const fTotal=document.getElementById("fTotal");
+  const campoSinal=document.getElementById("campoSinal");
+
+  function addItemRow(nome="",valor=""){
+    const row=document.createElement("div");row.className="irow";
+    const iN=document.createElement("input");iN.type="text";iN.placeholder="Ex.: Topo de bolo";iN.value=nome;
+    const iV=document.createElement("input");iV.type="number";iV.min="0";iV.step="0.01";iV.placeholder="R$";iV.value=valor;
+    const del=document.createElement("button");del.type="button";del.className="ibtn ibtn-del";del.textContent="−";
+    del.onclick=()=>{row.remove();calcTotal();};
+    iV.oninput=calcTotal;
+    row.append(iN,iV,del);
+    iList.appendChild(row);
+    calcTotal();
+  }
+  function calcTotal(){let t=0;iList.querySelectorAll("input[type=number]").forEach(i=>t+=pv(i.value));fTotal.textContent=fmt(t);}
+  document.getElementById("btnAddItem").onclick=()=>addItemRow();
+  document.querySelectorAll("input[name=st]").forEach(r=>r.onchange=()=>{
+    campoSinal.style.display=(r.value==="sinal"&&r.checked)?"block":"none";
+    if(r.value!=="sinal")document.getElementById("fSinal").value="";
+  });
+
+  function resetForm(){
+    editId=null;
+    ["fCliente","fTema","fData","fObs","fSinal"].forEach(id=>document.getElementById(id).value="");
+    iList.innerHTML="";addItemRow();
+    campoSinal.style.display="none";
+    document.querySelector("input[name=st][value=pendente]").checked=true;
+    calcTotal();
+    document.getElementById("btnCancelar").style.display="none";
+    document.getElementById("btnSalvar").textContent="Salvar pedido ✨";
+  }
+  document.getElementById("btnCancelar").onclick=()=>{resetForm();document.querySelector('.tab[data-tab="ativos"]').click();};
+
+  document.getElementById("btnSalvar").onclick=()=>{
+    const cliente=document.getElementById("fCliente").value.trim();
+    const data=document.getElementById("fData").value;
+    if(!cliente||!data){alert("Preencha o nome da cliente e a data de entrega.");return;}
+    const itens=[];
+    iList.querySelectorAll(".irow").forEach(row=>{
+      const[n,v]=row.querySelectorAll("input");
+      if(n.value.trim()||v.value)itens.push({nome:n.value.trim(),valor:pv(v.value)});
+    });
+    const total=itens.reduce((a,i)=>a+i.valor,0);
+    const status=document.querySelector("input[name=st]:checked").value;
+    const sinal=status==="sinal"?pv(document.getElementById("fSinal").value):0;
+    const recebido=status==="total"?total:sinal;
+    const aReceber=total-recebido;
+    const tema=document.getElementById("fTema").value.trim();
+    const obs=document.getElementById("fObs").value.trim();
+    const pedidos=load();
+    if(editId!==null){
+      const idx=pedidos.findIndex(p=>p.id===editId);
+      if(idx>-1)pedidos[idx]={...pedidos[idx],cliente,tema,data,itens,total,status,sinal,recebido,aReceber,obs};
+    }else{
+      pedidos.push({id:Date.now(),cliente,tema,data,itens,total,status,sinal,recebido,aReceber,obs});
+    }
+    save(pedidos);
+    resetForm();
+    renderAll();
+    document.querySelector('.tab[data-tab="ativos"]').click();
+    alert(editId!==null?"Pedido atualizado!":"Pedido salvo!");
+  };
+
+  function editarPedido(id){
+    const p=load().find(x=>x.id===id);if(!p)return;
+    editId=id;
+    document.getElementById("fCliente").value=p.cliente;
+    document.getElementById("fTema").value=p.tema||"";
+    document.getElementById("fData").value=p.data;
+    document.getElementById("fObs").value=p.obs||"";
+    iList.innerHTML="";
+    (p.itens||[]).forEach(i=>addItemRow(i.nome,i.valor));
+    if(!iList.children.length)addItemRow();
+    const stEl=document.querySelector(`input[name=st][value="${p.status}"]`);
+    if(stEl)stEl.checked=true;
+    campoSinal.style.display=(p.status==="sinal")?"block":"none";
+    if(p.status==="sinal")document.getElementById("fSinal").value=p.sinal||"";
+    calcTotal();
+    document.getElementById("btnCancelar").style.display="inline-flex";
+    document.getElementById("btnSalvar").textContent="Atualizar pedido ✨";
+    document.querySelector('.tab[data-tab="novo"]').click();
+  }
+
+  function excluirPedido(id){
+    if(!confirm("Excluir este pedido?"))return;
+    save(load().filter(x=>x.id!==id));
+    renderAll();
+  }
+
+  function renderPedidos(){
+    const lista=load().sort((a,b)=>a.data.localeCompare(b.data));
+    const div=document.getElementById("listaOrders");
+    const msg=document.getElementById("msgVazia");
+    div.innerHTML="";
+    msg.style.display=lista.length?"none":"block";
+    const hoje=new Date();hoje.setHours(0,0,0,0);
+    lista.forEach(p=>{
+      const dataObj=parseLocal(p.data);
+      const dataFmt=dataObj.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
+      const diff=Math.ceil((dataObj-hoje)/86400000);
+      const urg=diff>=0&&diff<=3&&Number(p.aReceber)>0;
+      const card=document.createElement("article");card.className="ocard";
+      card.innerHTML=`
+        <div class="ocard-head">
+          <div class="ocard-client">${p.cliente}</div>
+          <div class="ocard-date">Entrega: ${dataFmt}</div>
+        </div>
+        <div class="tags">
+          <span class="tag">${p.tema||"Sem tema"}</span>
+          ${urg?'<span class="tag urg">⚡ URGENTE</span>':""}
+          <span class="tag">${p.status==="pendente"?"Pendente":p.status==="sinal"?"Sinal pago":"Pago total"}</span>
+        </div>
+        <div class="money">
+          <span><strong>Total:</strong> ${fmt(p.total)}</span>
+          <span><strong>Sinal:</strong> ${fmt(p.recebido)}</span>
+          <span><strong>A receber:</strong> ${fmt(p.aReceber)}</span>
+        </div>
+        ${p.itens&&p.itens.length?`<div class="notes">Itens: ${p.itens.map(i=>i.nome).join(", ")}</div>`:""}
+        ${p.obs?`<div class="notes">Obs.: ${p.obs}</div>`:""}
+        <div class="card-actions">
+          <button class="btn-edit" data-id="${p.id}">✏️ Editar</button>
+          <button class="btn-del" data-id="${p.id}">🗑️ Excluir</button>
+        </div>`;
+      div.appendChild(card);
+    });
+    div.querySelectorAll(".btn-edit").forEach(b=>b.onclick=()=>editarPedido(Number(b.dataset.id)));
+    div.querySelectorAll(".btn-del").forEach(b=>b.onclick=()=>excluirPedido(Number(b.dataset.id)));
+  }
+
+  function renderResumo(){
+    const lista=load();let ab=0,urg=0,rec=0,arec=0;
+    const hoje=new Date();hoje.setHours(0,0,0,0);
+    lista.forEach(p=>{
+      const d=parseLocal(p.data);
+      const diff=Math.ceil((d-hoje)/86400000);
+      if(Number(p.aReceber)>0)ab++;
+      if(diff>=0&&diff<=3&&Number(p.aReceber)>0)urg++;
+      rec+=Number(p.recebido)||0;
+      arec+=Number(p.aReceber)||0;
+    });
+    document.getElementById("rAbertos").textContent=ab;
+    document.getElementById("rUrgentes").textContent=urg;
+    document.getElementById("rRecebido").textContent=fmt(rec);
+    document.getElementById("rAReceber").textContent=fmt(arec);
+  }
+
+  const FERIADOS=["01-01","21-04","01-05","07-09","12-10","02-11","15-11","25-12"];
+  const NDIAS=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+
+  function renderSemana(){
+    const hoje=new Date();hoje.setHours(0,0,0,0);
+    const dow=hoje.getDay();
+    const seg=new Date(hoje);seg.setDate(hoje.getDate()-(dow===0?6:dow-1));
+    const dom=new Date(seg);dom.setDate(seg.getDate()+6);
+    document.getElementById("wPeriodo").textContent=
+      seg.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})+" a "+
+      dom.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
+    const dias=[];
+    for(let i=0;i<7;i++){const d=new Date(seg);d.setDate(seg.getDate()+i);dias.push(d);}
+    const pedidos=load();
+    const wd=document.getElementById("wDays");wd.innerHTML="";
+    dias.forEach(d=>{
+      const key=toISO(d);
+      const ds=String(d.getDate()).padStart(2,"0")+"-"+String(d.getMonth()+1).padStart(2,"0");
+      const fer=FERIADOS.includes(ds);
+      const temP=pedidos.some(p=>p.data===key);
+      const cel=document.createElement("div");
+      cel.className="dcel"+(fer?" holiday":"")+(temP?" hasorder":"");
+      cel.innerHTML=`<div class="dn">${NDIAS[d.getDay()]}</div><div class="dd">${d.getDate()}</div><div class="dl">${fer?"Feriado":temP?"Entrega":""}</div>`;
+      wd.appendChild(cel);
+    });
+    const wo=document.getElementById("wOrders");wo.innerHTML="";
+    const sem=pedidos.filter(p=>{const d=parseLocal(p.data);return d>=seg&&d<=dom;}).sort((a,b)=>a.data.localeCompare(b.data));
+    if(!sem.length){wo.innerHTML='<p class="helper">Nenhuma entrega nesta semana.</p>';return;}
+    sem.forEach(p=>{
+      const d=parseLocal(p.data);
+      const card=document.createElement("article");card.className="ocard";
+      card.innerHTML=`
+        <div class="ocard-head">
+          <div class="ocard-client">${p.cliente}</div>
+          <div class="ocard-date">${d.toLocaleDateString("pt-BR",{weekday:"short",day:"2-digit",month:"2-digit"})}</div>
+        </div>
+        <div class="money">
+          <span><strong>Tema:</strong> ${p.tema||"-"}</span>
+          <span><strong>Total:</strong> ${fmt(p.total)}</span>
+          <span><strong>A receber:</strong> ${fmt(p.aReceber)}</span>
+        </div>
+        ${p.itens&&p.itens.length?`<div class="notes">Itens: ${p.itens.map(i=>i.nome).join(", ")}</div>`:""}`;
+      wo.appendChild(card);
+    });
+  }
+
+  // TOGGLE SENHA
+  function toggleSenha(id,btn){
+    const inp=document.getElementById(id);
+    const show=inp.type==="password";
+    inp.type=show?"text":"password";
+    btn.textContent=show?"Ocultar":"Mostrar";
+  }
+
+  // ALTERAR SENHA
+  document.getElementById("btnAlterarSenha").onclick=()=>{
+    const atual=document.getElementById("senhaAtual").value.trim();
+    const nova=document.getElementById("senhaNova").value.trim();
+    const confirm=document.getElementById("senhaConfirm").value.trim();
+    const msgOk=document.getElementById("msgSenhaOk");
+    const msgErro=document.getElementById("msgSenhaErro");
+
+    msgOk.style.display="none";
+    msgErro.style.display="none";
+
+    if(!atual||!nova||!confirm){
+      msgErro.style.display="block";
+      msgErro.textContent="⚠️ Preencha todos os campos.";
+      return;
+    }
+    if(atual!==getSenhaAtual()){
+      msgErro.style.display="block";
+      msgErro.textContent="❌ Senha atual incorreta.";
+      return;
+    }
+    if(nova.length<6){
+      msgErro.style.display="block";
+      msgErro.textContent="⚠️ A nova senha precisa ter pelo menos 6 caracteres.";
+      return;
+    }
+    if(nova!==confirm){
+      msgErro.style.display="block";
+      msgErro.textContent="❌ As senhas não coincidem.";
+      return;
+    }
+
+    localStorage.setItem(KEY_SENHA,nova);
+    msgOk.style.display="block";
+    document.getElementById("senhaAtual").value="";
+    document.getElementById("senhaNova").value="";
+    document.getElementById("senhaConfirm").value="";
+    setTimeout(()=>msgOk.style.display="none",3000);
+  };
+
+  function renderAll(){renderPedidos();renderResumo();if(!iList.children.length)addItemRow();}
+  renderAll();
+</script>
+</body>
+</html>
