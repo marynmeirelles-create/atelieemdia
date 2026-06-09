@@ -11,7 +11,7 @@
   <link rel="apple-touch-icon" href="/icon-atelie-512.png">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root{--rosa:#FF7BAC;--roxo:#8C7BFF;--off:#FFF5F7;--cinza:#E8E8F3;--sombra:0 8px 20px rgba(0,0,0,0.07);--r:18px;}
+    :root{--rosa:#FF7BAC;--roxo:#8C7BFF;--cinza:#E8E8F3;--sombra:0 8px 20px rgba(0,0,0,0.07);--r:18px;}
     *{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Poppins',sans-serif;background:radial-gradient(circle at top left,#FFF5F7 0%,#FFE4F0 35%,#F9F0FF 70%,#fff 100%);min-height:100vh;display:flex;justify-content:center;color:#4A4A4A;}
     .shell{width:100%;max-width:480px;min-height:100vh;background:linear-gradient(180deg,#FFF5F7 0%,#fff 40%,#FFF5F7 100%);box-shadow:0 0 40px rgba(140,123,255,0.13);display:flex;flex-direction:column;}
@@ -55,7 +55,7 @@
     .fcard{background:#fff;border-radius:var(--r);padding:15px 14px 18px;box-shadow:var(--sombra);margin-bottom:12px;}
     .fgroup{margin-bottom:13px;}
     label.lbl{display:block;font-size:12px;font-weight:600;margin-bottom:4px;color:#7a6c9f;}
-    input[type=text],input[type=date],input[type=number],textarea{width:100%;padding:11px 14px;border-radius:999px;border:1px solid var(--cinza);background:#fff;font-family:'Poppins',sans-serif;font-size:13px;outline:none;transition:.2s;}
+    input[type=text],input[type=date],input[type=number],input[type=password],textarea{width:100%;padding:11px 14px;border-radius:999px;border:1px solid var(--cinza);background:#fff;font-family:'Poppins',sans-serif;font-size:13px;outline:none;transition:.2s;}
     textarea{border-radius:16px;min-height:62px;resize:vertical;}
     input:focus,textarea:focus{border-color:var(--rosa);box-shadow:0 0 0 2px rgba(255,123,172,.2);}
     .ilist{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
@@ -86,11 +86,12 @@
     .helper{font-size:11px;color:#a08fc7;margin-top:8px;}
     .msg-vazia{font-size:12px;color:#a08fc7;margin-top:8px;}
     .pw-wrap{position:relative;margin-bottom:4px;}
-    .pw-wrap input{padding-right:80px;}
+    .pw-wrap input{padding-right:90px!important;}
     .pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:none;border-radius:999px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;background:#F0EDFF;color:#7a3a6b;font-family:'Poppins',sans-serif;}
-    .btn-salvar-dados{width:100%;padding:13px;border:none;border-radius:999px;background:linear-gradient(90deg,var(--rosa),var(--roxo));color:#fff;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;}
-    .msg-ok{font-size:12px;color:#3ECFB2;font-weight:600;margin-top:8px;display:none;}
-    .msg-erro{font-size:12px;color:#c73232;font-weight:600;margin-top:8px;display:none;}
+    .btn-salvar-senha{width:100%;padding:13px;border:none;border-radius:999px;background:linear-gradient(90deg,var(--rosa),var(--roxo));color:#fff;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;box-shadow:0 4px 12px rgba(255,123,172,.35);}
+    .msg-ok{font-size:12px;color:#3ECFB2;font-weight:600;margin-top:10px;display:none;text-align:center;}
+    .msg-erro{font-size:12px;color:#c73232;font-weight:600;margin-top:10px;display:none;text-align:center;}
+    .dica{font-size:11px;color:#a08fc7;margin-bottom:14px;background:#FFF5F7;padding:10px 14px;border-radius:12px;}
   </style>
 </head>
 <body>
@@ -166,72 +167,135 @@
       <p class="helper">Feriados em rosa · Dias com entrega em borda roxa</p>
     </div>
 
-  <!-- ABA CONFIG -->
-<div id="panelConfig" class="panel">
-  <div class="fcard">
-    <div class="sec-title">🔒 Alterar senha</div>
-    <p style="font-size:12px;color:#a08fc7;margin-bottom:16px;">Se esquecer a senha, use <strong>123</strong> para entrar.</p>
-    <div class="fgroup">
-      <label class="lbl">Senha atual</label>
-      <div class="pw-wrap">
-        <input type="password" id="senhaAtual" placeholder="Digite a senha atual">
-        <button type="button" class="pw-toggle" onclick="toggleSenha('senhaAtual',this)">Mostrar</button>
+    <!-- ABA CONFIG -->
+    <div id="panelConfig" class="panel">
+      <div class="fcard">
+        <div class="sec-title">🔒 Alterar senha</div>
+        <p class="dica">💡 Se esquecer a senha, use <strong>123</strong> para entrar — ela sempre funciona!</p>
+        <div class="fgroup">
+          <label class="lbl">Senha atual</label>
+          <div class="pw-wrap">
+            <input type="password" id="senhaAtual" placeholder="Digite a senha atual">
+            <button type="button" class="pw-toggle" id="togAtual">Mostrar</button>
+          </div>
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Nova senha</label>
+          <div class="pw-wrap">
+            <input type="password" id="senhaNova" placeholder="Mínimo 3 caracteres">
+            <button type="button" class="pw-toggle" id="togNova">Mostrar</button>
+          </div>
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Confirmar nova senha</label>
+          <div class="pw-wrap">
+            <input type="password" id="senhaConfirm" placeholder="Repita a nova senha">
+            <button type="button" class="pw-toggle" id="togConfirm">Mostrar</button>
+          </div>
+        </div>
+        <button class="btn-salvar-senha" id="btnAlterarSenha">🔒 Salvar nova senha</button>
+        <p class="msg-ok" id="msgSenhaOk">✅ Senha alterada com sucesso!</p>
+        <p class="msg-erro" id="msgSenhaErro"></p>
       </div>
     </div>
-    <div class="fgroup">
-      <label class="lbl">Nova senha</label>
-      <div class="pw-wrap">
-        <input type="password" id="senhaNova" placeholder="Digite a nova senha">
-        <button type="button" class="pw-toggle" onclick="toggleSenha('senhaNova',this)">Mostrar</button>
-      </div>
-    </div>
-    <div class="fgroup">
-      <label class="lbl">Confirmar nova senha</label>
-      <div class="pw-wrap">
-        <input type="password" id="senhaConfirm" placeholder="Confirme a nova senha">
-        <button type="button" class="pw-toggle" onclick="toggleSenha('senhaConfirm',this)">Mostrar</button>
-      </div>
-    </div>
-    <button class="btn-salvar-dados" id="btnAlterarSenha">🔒 Alterar senha</button>
-    <p class="msg-ok" id="msgSenhaOk">✅ Senha alterada com sucesso!</p>
-    <p class="msg-erro" id="msgSenhaErro"></p>
-  </div>
-</div>
 
   </main>
 </div>
 <script>
-  // Autenticação — chave exclusiva do Ateliê em Dia
-  const K_AUTH = "atd_auth";
-  const KEY    = "atd_pedidos";
+  const K_AUTH    = "atd_auth";
+  const K_SENHA   = "atd_senha";
+  const K_PEDIDOS = "atd_pedidos";
+  const SENHA_PAD = "123";
 
+  // Verifica autenticação
   if(localStorage.getItem(K_AUTH) !== "1"){
     window.location.href = "/";
   }
 
+  function getSenhaAtual(){
+    return localStorage.getItem(K_SENHA) || SENHA_PAD;
+  }
+
+  // Botão sair
   document.getElementById("btnSair").onclick = () => {
     localStorage.removeItem(K_AUTH);
     window.location.href = "/";
   };
 
-  const fmt = v => Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-  const pv  = v => Number(String(v||0).replace(",","."))||0;
-  const load = () => { try{ return JSON.parse(localStorage.getItem(KEY)||"[]"); }catch{ return[]; } };
-  const save = d => localStorage.setItem(KEY, JSON.stringify(d));
-  function parseLocal(s){ const[y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); }
-  function toISO(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+  // Botões mostrar/ocultar senha
+  document.getElementById("togAtual").onclick = function(){
+    const i = document.getElementById("senhaAtual");
+    const show = i.type === "password";
+    i.type = show ? "text" : "password";
+    this.textContent = show ? "Ocultar" : "Mostrar";
+  };
+  document.getElementById("togNova").onclick = function(){
+    const i = document.getElementById("senhaNova");
+    const show = i.type === "password";
+    i.type = show ? "text" : "password";
+    this.textContent = show ? "Ocultar" : "Mostrar";
+  };
+  document.getElementById("togConfirm").onclick = function(){
+    const i = document.getElementById("senhaConfirm");
+    const show = i.type === "password";
+    i.type = show ? "text" : "password";
+    this.textContent = show ? "Ocultar" : "Mostrar";
+  };
 
+  // Alterar senha
+  document.getElementById("btnAlterarSenha").onclick = function(){
+    const atual    = document.getElementById("senhaAtual").value.trim();
+    const nova     = document.getElementById("senhaNova").value.trim();
+    const confirma = document.getElementById("senhaConfirm").value.trim();
+    const msgOk    = document.getElementById("msgSenhaOk");
+    const msgErro  = document.getElementById("msgSenhaErro");
+    msgOk.style.display   = "none";
+    msgErro.style.display = "none";
+    if(!atual || !nova || !confirma){
+      msgErro.textContent   = "⚠️ Preencha todos os campos.";
+      msgErro.style.display = "block"; return;
+    }
+    if(atual !== getSenhaAtual()){
+      msgErro.textContent   = "❌ Senha atual incorreta.";
+      msgErro.style.display = "block"; return;
+    }
+    if(nova.length < 3){
+      msgErro.textContent   = "⚠️ A senha precisa ter pelo menos 3 caracteres.";
+      msgErro.style.display = "block"; return;
+    }
+    if(nova !== confirma){
+      msgErro.textContent   = "❌ As senhas não coincidem.";
+      msgErro.style.display = "block"; return;
+    }
+    localStorage.setItem(K_SENHA, nova);
+    msgOk.style.display = "block";
+    document.getElementById("senhaAtual").value   = "";
+    document.getElementById("senhaNova").value    = "";
+    document.getElementById("senhaConfirm").value = "";
+    setTimeout(() => msgOk.style.display = "none", 3000);
+  };
+
+  // Tabs
   document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
     document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
     t.classList.add("active");
     document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-    const name = t.dataset.tab;
+    const name    = t.dataset.tab;
     const panelId = "panel" + name.charAt(0).toUpperCase() + name.slice(1);
     document.getElementById(panelId).classList.add("active");
     if(name === "semana") renderSemana();
   });
 
-  let editId = null;
+  // Utilitários
+  const fmt = v => Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  const pv  = v => Number(String(v||0).replace(",","."))||0;
+  const load = () => { try{ return JSON.parse(localStorage.getItem(K_PEDIDOS)||"[]"); }catch{ return[]; } };
+  const save = d => localStorage.setItem(K_PEDIDOS, JSON.stringify(d));
+  function parseLocal(s){ const[y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); }
+  function toISO(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+
+  // Formulário de pedidos
+  let editId       = null;
   const iList      = document.getElementById("iList");
   const fTotal     = document.getElementById("fTotal");
   const campoSinal = document.getElementById("campoSinal");
@@ -242,7 +306,7 @@
     const iV  = document.createElement("input"); iV.type="number"; iV.min="0"; iV.step="0.01"; iV.placeholder="R$"; iV.value=valor;
     const del = document.createElement("button"); del.type="button"; del.className="ibtn ibtn-del"; del.textContent="−";
     del.onclick = () => { row.remove(); calcTotal(); };
-    iV.oninput = calcTotal;
+    iV.oninput  = calcTotal;
     row.append(iN, iV, del);
     iList.appendChild(row);
     calcTotal();
@@ -305,7 +369,7 @@
     resetForm();
     renderAll();
     document.querySelector('.tab[data-tab="ativos"]').click();
-    alert(editId !== null ? "Pedido atualizado!" : "Pedido salvo! 🎀");
+    alert(editId !== null ? "Pedido atualizado! ✨" : "Pedido salvo! 🎀");
   };
 
   function editarPedido(id){
@@ -342,11 +406,11 @@
     msg.style.display = lista.length ? "none" : "block";
     const hoje = new Date(); hoje.setHours(0,0,0,0);
     lista.forEach(p => {
-      const dataObj  = parseLocal(p.data);
-      const dataFmt  = dataObj.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
-      const diff     = Math.ceil((dataObj - hoje) / 86400000);
-      const urg      = diff >= 0 && diff <= 3 && Number(p.aReceber) > 0;
-      const card     = document.createElement("article"); card.className = "ocard";
+      const dataObj = parseLocal(p.data);
+      const dataFmt = dataObj.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
+      const diff    = Math.ceil((dataObj - hoje) / 86400000);
+      const urg     = diff >= 0 && diff <= 3 && Number(p.aReceber) > 0;
+      const card    = document.createElement("article"); card.className = "ocard";
       card.innerHTML = `
         <div class="ocard-head">
           <div class="ocard-client">${p.cliente}</div>
@@ -362,8 +426,8 @@
           <span><strong>Sinal:</strong> ${fmt(p.recebido)}</span>
           <span><strong>A receber:</strong> ${fmt(p.aReceber)}</span>
         </div>
-        ${p.itens&&p.itens.length ? `<div class="notes">Itens: ${p.itens.map(i=>i.nome).join(", ")}</div>` : ""}
-        ${p.obs ? `<div class="notes">Obs.: ${p.obs}</div>` : ""}
+        ${p.itens&&p.itens.length?`<div class="notes">Itens: ${p.itens.map(i=>i.nome).join(", ")}</div>`:""}
+        ${p.obs?`<div class="notes">Obs.: ${p.obs}</div>`:""}
         <div class="card-actions">
           <button class="btn-edit" data-id="${p.id}">✏️ Editar</button>
           <button class="btn-del" data-id="${p.id}">🗑️ Excluir</button>
@@ -376,15 +440,15 @@
 
   function renderResumo(){
     const lista = load();
-    let ab=0, urg=0, rec=0, arec=0;
+    let ab=0,urg=0,rec=0,arec=0;
     const hoje = new Date(); hoje.setHours(0,0,0,0);
     lista.forEach(p => {
       const d    = parseLocal(p.data);
       const diff = Math.ceil((d - hoje) / 86400000);
       if(Number(p.aReceber) > 0) ab++;
       if(diff >= 0 && diff <= 3 && Number(p.aReceber) > 0) urg++;
-      rec  += Number(p.recebido) || 0;
-      arec += Number(p.aReceber) || 0;
+      rec  += Number(p.recebido)||0;
+      arec += Number(p.aReceber)||0;
     });
     document.getElementById("rAbertos").textContent  = ab;
     document.getElementById("rUrgentes").textContent = urg;
@@ -398,31 +462,31 @@
   function renderSemana(){
     const hoje = new Date(); hoje.setHours(0,0,0,0);
     const dow  = hoje.getDay();
-    const seg  = new Date(hoje); seg.setDate(hoje.getDate() - (dow === 0 ? 6 : dow - 1));
-    const dom  = new Date(seg);  dom.setDate(seg.getDate() + 6);
+    const seg  = new Date(hoje); seg.setDate(hoje.getDate()-(dow===0?6:dow-1));
+    const dom  = new Date(seg);  dom.setDate(seg.getDate()+6);
     document.getElementById("wPeriodo").textContent =
-      seg.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"}) + " a " +
+      seg.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})+" a "+
       dom.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
     const dias = [];
-    for(let i=0; i<7; i++){ const d = new Date(seg); d.setDate(seg.getDate()+i); dias.push(d); }
+    for(let i=0;i<7;i++){ const d=new Date(seg); d.setDate(seg.getDate()+i); dias.push(d); }
     const pedidos = load();
-    const wd = document.getElementById("wDays"); wd.innerHTML = "";
+    const wd = document.getElementById("wDays"); wd.innerHTML="";
     dias.forEach(d => {
       const key = toISO(d);
-      const ds  = String(d.getDate()).padStart(2,"0") + "-" + String(d.getMonth()+1).padStart(2,"0");
+      const ds  = String(d.getDate()).padStart(2,"0")+"-"+String(d.getMonth()+1).padStart(2,"0");
       const fer = FERIADOS.includes(ds);
-      const temP = pedidos.some(p => p.data === key);
+      const temP = pedidos.some(p => p.data===key);
       const cel = document.createElement("div");
-      cel.className = "dcel" + (fer ? " holiday" : "") + (temP ? " hasorder" : "");
+      cel.className = "dcel"+(fer?" holiday":"")+(temP?" hasorder":"");
       cel.innerHTML = `<div class="dn">${NDIAS[d.getDay()]}</div><div class="dd">${d.getDate()}</div><div class="dl">${fer?"Feriado":temP?"Entrega":""}</div>`;
       wd.appendChild(cel);
     });
-    const wo  = document.getElementById("wOrders"); wo.innerHTML = "";
-    const sem = pedidos.filter(p => { const d = parseLocal(p.data); return d >= seg && d <= dom; }).sort((a,b) => a.data.localeCompare(b.data));
-    if(!sem.length){ wo.innerHTML = '<p class="helper">Nenhuma entrega nesta semana.</p>'; return; }
+    const wo  = document.getElementById("wOrders"); wo.innerHTML="";
+    const sem = pedidos.filter(p=>{ const d=parseLocal(p.data); return d>=seg&&d<=dom; }).sort((a,b)=>a.data.localeCompare(b.data));
+    if(!sem.length){ wo.innerHTML='<p class="helper">Nenhuma entrega nesta semana.</p>'; return; }
     sem.forEach(p => {
       const d    = parseLocal(p.data);
-      const card = document.createElement("article"); card.className = "ocard";
+      const card = document.createElement("article"); card.className="ocard";
       card.innerHTML = `
         <div class="ocard-head">
           <div class="ocard-client">${p.cliente}</div>
@@ -433,7 +497,7 @@
           <span><strong>Total:</strong> ${fmt(p.total)}</span>
           <span><strong>A receber:</strong> ${fmt(p.aReceber)}</span>
         </div>
-        ${p.itens&&p.itens.length ? `<div class="notes">Itens: ${p.itens.map(i=>i.nome).join(", ")}</div>` : ""}`;
+        ${p.itens&&p.itens.length?`<div class="notes">Itens: ${p.itens.map(i=>i.nome).join(", ")}</div>`:""}`;
       wo.appendChild(card);
     });
   }
