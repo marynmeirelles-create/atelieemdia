@@ -169,64 +169,33 @@
     <!-- ABA CONFIG -->
     <div id="panelConfig" class="panel">
       <div class="fcard">
-        <div class="sec-title">🔒 Alterar senha</div>
-        <div class="fgroup">
-          <label class="lbl">Senha atual</label>
-          <div class="pw-wrap">
-            <input type="password" id="senhaAtual" placeholder="Digite a senha atual">
-            <button type="button" class="pw-toggle" onclick="toggleSenha('senhaAtual',this)">Mostrar</button>
-          </div>
-        </div>
-        <div class="fgroup">
-          <label class="lbl">Nova senha</label>
-          <div class="pw-wrap">
-            <input type="password" id="senhaNova" placeholder="Digite a nova senha">
-            <button type="button" class="pw-toggle" onclick="toggleSenha('senhaNova',this)">Mostrar</button>
-          </div>
-        </div>
-        <div class="fgroup">
-          <label class="lbl">Confirmar nova senha</label>
-          <div class="pw-wrap">
-            <input type="password" id="senhaConfirm" placeholder="Confirme a nova senha">
-            <button type="button" class="pw-toggle" onclick="toggleSenha('senhaConfirm',this)">Mostrar</button>
-          </div>
-        </div>
-        <button class="btn-salvar-dados" id="btnAlterarSenha">🔒 Alterar senha</button>
-        <p class="msg-ok" id="msgSenhaOk">✅ Senha alterada com sucesso!</p>
-        <p class="msg-erro" id="msgSenhaErro"></p>
+        <div class="sec-title">🔒 Senha de acesso</div>
+        <p style="font-size:12px;color:#a08fc7;margin-bottom:16px;">A senha atual é <strong>123</strong>. Para alterá-la, edite o arquivo index.html no GitHub.</p>
       </div>
     </div>
 
   </main>
 </div>
 <script>
-  // Chaves exclusivas do Ateliê em Dia
-  const K_SENHA   = "atelie_senha";
-  const K_AUTH    = "atelie_auth";
-  const SENHA_PAD = "atelie123";
-  const KEY       = "atelie_pedidos";
+  // Autenticação — chave exclusiva do Ateliê em Dia
+  const K_AUTH = "atd_auth";
+  const KEY    = "atd_pedidos";
 
-  // Verifica autenticação
   if(localStorage.getItem(K_AUTH) !== "1"){
     window.location.href = "/";
   }
 
-  function getSenhaAtual(){
-    return localStorage.getItem(K_SENHA) || SENHA_PAD;
-  }
+  document.getElementById("btnSair").onclick = () => {
+    localStorage.removeItem(K_AUTH);
+    window.location.href = "/";
+  };
 
-  let editId = null;
   const fmt = v => Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
   const pv  = v => Number(String(v||0).replace(",","."))||0;
   const load = () => { try{ return JSON.parse(localStorage.getItem(KEY)||"[]"); }catch{ return[]; } };
   const save = d => localStorage.setItem(KEY, JSON.stringify(d));
   function parseLocal(s){ const[y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); }
   function toISO(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
-
-  document.getElementById("btnSair").onclick = () => {
-    localStorage.removeItem(K_AUTH);
-    window.location.href = "/";
-  };
 
   document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
     document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
@@ -238,14 +207,15 @@
     if(name === "semana") renderSemana();
   });
 
-  const iList     = document.getElementById("iList");
-  const fTotal    = document.getElementById("fTotal");
+  let editId = null;
+  const iList      = document.getElementById("iList");
+  const fTotal     = document.getElementById("fTotal");
   const campoSinal = document.getElementById("campoSinal");
 
   function addItemRow(nome="", valor=""){
     const row = document.createElement("div"); row.className = "irow";
-    const iN = document.createElement("input"); iN.type="text"; iN.placeholder="Ex.: Topo de bolo"; iN.value=nome;
-    const iV = document.createElement("input"); iV.type="number"; iV.min="0"; iV.step="0.01"; iV.placeholder="R$"; iV.value=valor;
+    const iN  = document.createElement("input"); iN.type="text"; iN.placeholder="Ex.: Topo de bolo"; iN.value=nome;
+    const iV  = document.createElement("input"); iV.type="number"; iV.min="0"; iV.step="0.01"; iV.placeholder="R$"; iV.value=valor;
     const del = document.createElement("button"); del.type="button"; del.className="ibtn ibtn-del"; del.textContent="−";
     del.onclick = () => { row.remove(); calcTotal(); };
     iV.oninput = calcTotal;
@@ -311,7 +281,7 @@
     resetForm();
     renderAll();
     document.querySelector('.tab[data-tab="ativos"]').click();
-    alert(editId !== null ? "Pedido atualizado!" : "Pedido salvo!");
+    alert(editId !== null ? "Pedido atualizado!" : "Pedido salvo! 🎀");
   };
 
   function editarPedido(id){
@@ -443,49 +413,6 @@
       wo.appendChild(card);
     });
   }
-
-  function toggleSenha(id, btn){
-    const inp  = document.getElementById(id);
-    const show = inp.type === "password";
-    inp.type   = show ? "text" : "password";
-    btn.textContent = show ? "Ocultar" : "Mostrar";
-  }
-
-  document.getElementById("btnAlterarSenha").onclick = () => {
-    const atual    = document.getElementById("senhaAtual").value.trim();
-    const nova     = document.getElementById("senhaNova").value.trim();
-    const confirma = document.getElementById("senhaConfirm").value.trim();
-    const msgOk    = document.getElementById("msgSenhaOk");
-    const msgErro  = document.getElementById("msgSenhaErro");
-    msgOk.style.display   = "none";
-    msgErro.style.display = "none";
-    if(!atual || !nova || !confirma){
-      msgErro.style.display = "block";
-      msgErro.textContent   = "⚠️ Preencha todos os campos.";
-      return;
-    }
-    if(atual !== getSenhaAtual()){
-      msgErro.style.display = "block";
-      msgErro.textContent   = "❌ Senha atual incorreta.";
-      return;
-    }
-    if(nova.length < 6){
-      msgErro.style.display = "block";
-      msgErro.textContent   = "⚠️ A nova senha precisa ter pelo menos 6 caracteres.";
-      return;
-    }
-    if(nova !== confirma){
-      msgErro.style.display = "block";
-      msgErro.textContent   = "❌ As senhas não coincidem.";
-      return;
-    }
-    localStorage.setItem(K_SENHA, nova);
-    msgOk.style.display = "block";
-    document.getElementById("senhaAtual").value  = "";
-    document.getElementById("senhaNova").value   = "";
-    document.getElementById("senhaConfirm").value = "";
-    setTimeout(() => msgOk.style.display = "none", 3000);
-  };
 
   function renderAll(){ renderPedidos(); renderResumo(); if(!iList.children.length) addItemRow(); }
   renderAll();
