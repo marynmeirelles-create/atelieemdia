@@ -166,13 +166,37 @@
       <p class="helper">Feriados em rosa · Dias com entrega em borda roxa</p>
     </div>
 
-    <!-- ABA CONFIG -->
-    <div id="panelConfig" class="panel">
-      <div class="fcard">
-        <div class="sec-title">🔒 Senha de acesso</div>
-        <p style="font-size:12px;color:#a08fc7;margin-bottom:16px;">A senha atual é <strong>123</strong>. Para alterá-la, edite o arquivo index.html no GitHub.</p>
+  <!-- ABA CONFIG -->
+<div id="panelConfig" class="panel">
+  <div class="fcard">
+    <div class="sec-title">🔒 Alterar senha</div>
+    <p style="font-size:12px;color:#a08fc7;margin-bottom:16px;">Se esquecer a senha, use <strong>123</strong> para entrar.</p>
+    <div class="fgroup">
+      <label class="lbl">Senha atual</label>
+      <div class="pw-wrap">
+        <input type="password" id="senhaAtual" placeholder="Digite a senha atual">
+        <button type="button" class="pw-toggle" onclick="toggleSenha('senhaAtual',this)">Mostrar</button>
       </div>
     </div>
+    <div class="fgroup">
+      <label class="lbl">Nova senha</label>
+      <div class="pw-wrap">
+        <input type="password" id="senhaNova" placeholder="Digite a nova senha">
+        <button type="button" class="pw-toggle" onclick="toggleSenha('senhaNova',this)">Mostrar</button>
+      </div>
+    </div>
+    <div class="fgroup">
+      <label class="lbl">Confirmar nova senha</label>
+      <div class="pw-wrap">
+        <input type="password" id="senhaConfirm" placeholder="Confirme a nova senha">
+        <button type="button" class="pw-toggle" onclick="toggleSenha('senhaConfirm',this)">Mostrar</button>
+      </div>
+    </div>
+    <button class="btn-salvar-dados" id="btnAlterarSenha">🔒 Alterar senha</button>
+    <p class="msg-ok" id="msgSenhaOk">✅ Senha alterada com sucesso!</p>
+    <p class="msg-erro" id="msgSenhaErro"></p>
+  </div>
+</div>
 
   </main>
 </div>
