@@ -200,167 +200,167 @@
   </main>
 </div>
 <script>
-  if(localStorage.getItem("atl_auth")!=="1"){
-    window.location.href="/";
-  }
+  // Chaves exclusivas do Ateliê em Dia
+  const K_SENHA   = "atelie_senha";
+  const K_AUTH    = "atelie_auth";
+  const SENHA_PAD = "atelie123";
+  const KEY       = "atelie_pedidos";
 
-  // Limpa senha antiga se ainda estiver salva
-  if(localStorage.getItem("atl_senha")==="orcamento123"){
-    localStorage.removeItem("atl_senha");
+  // Verifica autenticação
+  if(localStorage.getItem(K_AUTH) !== "1"){
+    window.location.href = "/";
   }
-
-  const KEY="atelie_pedidos";
-  const KEY_SENHA="atl_senha";
-  let editId=null;
-  const fmt=v=>Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-  const pv=v=>Number(String(v||0).replace(",","."))||0;
-  const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||"[]");}catch{return[];}};
-  const save=d=>localStorage.setItem(KEY,JSON.stringify(d));
-  function parseLocal(s){const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);}
-  function toISO(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 
   function getSenhaAtual(){
-    return localStorage.getItem(KEY_SENHA)||"atelie123";
+    return localStorage.getItem(K_SENHA) || SENHA_PAD;
   }
 
-  document.getElementById("btnSair").onclick=()=>{
-    localStorage.removeItem("atl_auth");
-    window.location.href="/";
+  let editId = null;
+  const fmt = v => Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  const pv  = v => Number(String(v||0).replace(",","."))||0;
+  const load = () => { try{ return JSON.parse(localStorage.getItem(KEY)||"[]"); }catch{ return[]; } };
+  const save = d => localStorage.setItem(KEY, JSON.stringify(d));
+  function parseLocal(s){ const[y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); }
+  function toISO(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+
+  document.getElementById("btnSair").onclick = () => {
+    localStorage.removeItem(K_AUTH);
+    window.location.href = "/";
   };
 
-  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
-    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
+    document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
     t.classList.add("active");
-    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-    const name=t.dataset.tab;
-    const panelId="panel"+name.charAt(0).toUpperCase()+name.slice(1);
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+    const name = t.dataset.tab;
+    const panelId = "panel" + name.charAt(0).toUpperCase() + name.slice(1);
     document.getElementById(panelId).classList.add("active");
-    if(name==="semana")renderSemana();
+    if(name === "semana") renderSemana();
   });
 
-  const iList=document.getElementById("iList");
-  const fTotal=document.getElementById("fTotal");
-  const campoSinal=document.getElementById("campoSinal");
+  const iList     = document.getElementById("iList");
+  const fTotal    = document.getElementById("fTotal");
+  const campoSinal = document.getElementById("campoSinal");
 
-  function addItemRow(nome="",valor=""){
-    const row=document.createElement("div");row.className="irow";
-    const iN=document.createElement("input");iN.type="text";iN.placeholder="Ex.: Topo de bolo";iN.value=nome;
-    const iV=document.createElement("input");iV.type="number";iV.min="0";iV.step="0.01";iV.placeholder="R$";iV.value=valor;
-    const del=document.createElement("button");del.type="button";del.className="ibtn ibtn-del";del.textContent="−";
-    del.onclick=()=>{row.remove();calcTotal();};
-    iV.oninput=calcTotal;
-    row.append(iN,iV,del);
+  function addItemRow(nome="", valor=""){
+    const row = document.createElement("div"); row.className = "irow";
+    const iN = document.createElement("input"); iN.type="text"; iN.placeholder="Ex.: Topo de bolo"; iN.value=nome;
+    const iV = document.createElement("input"); iV.type="number"; iV.min="0"; iV.step="0.01"; iV.placeholder="R$"; iV.value=valor;
+    const del = document.createElement("button"); del.type="button"; del.className="ibtn ibtn-del"; del.textContent="−";
+    del.onclick = () => { row.remove(); calcTotal(); };
+    iV.oninput = calcTotal;
+    row.append(iN, iV, del);
     iList.appendChild(row);
     calcTotal();
   }
 
   function calcTotal(){
-    let t=0;
-    iList.querySelectorAll("input[type=number]").forEach(i=>t+=pv(i.value));
-    fTotal.textContent=fmt(t);
+    let t = 0;
+    iList.querySelectorAll("input[type=number]").forEach(i => t += pv(i.value));
+    fTotal.textContent = fmt(t);
   }
 
-  document.getElementById("btnAddItem").onclick=()=>addItemRow();
+  document.getElementById("btnAddItem").onclick = () => addItemRow();
 
-  document.querySelectorAll("input[name=st]").forEach(r=>r.onchange=()=>{
-    campoSinal.style.display=(r.value==="sinal"&&r.checked)?"block":"none";
-    if(r.value!=="sinal")document.getElementById("fSinal").value="";
+  document.querySelectorAll("input[name=st]").forEach(r => r.onchange = () => {
+    campoSinal.style.display = (r.value === "sinal" && r.checked) ? "block" : "none";
+    if(r.value !== "sinal") document.getElementById("fSinal").value = "";
   });
 
   function resetForm(){
-    editId=null;
-    ["fCliente","fTema","fData","fObs","fSinal"].forEach(id=>document.getElementById(id).value="");
-    iList.innerHTML="";
+    editId = null;
+    ["fCliente","fTema","fData","fObs","fSinal"].forEach(id => document.getElementById(id).value = "");
+    iList.innerHTML = "";
     addItemRow();
-    campoSinal.style.display="none";
-    document.querySelector("input[name=st][value=pendente]").checked=true;
+    campoSinal.style.display = "none";
+    document.querySelector("input[name=st][value=pendente]").checked = true;
     calcTotal();
-    document.getElementById("btnCancelar").style.display="none";
-    document.getElementById("btnSalvar").textContent="Salvar pedido ✨";
+    document.getElementById("btnCancelar").style.display = "none";
+    document.getElementById("btnSalvar").textContent = "Salvar pedido ✨";
   }
 
-  document.getElementById("btnCancelar").onclick=()=>{
+  document.getElementById("btnCancelar").onclick = () => {
     resetForm();
     document.querySelector('.tab[data-tab="ativos"]').click();
   };
 
-  document.getElementById("btnSalvar").onclick=()=>{
-    const cliente=document.getElementById("fCliente").value.trim();
-    const data=document.getElementById("fData").value;
-    if(!cliente||!data){alert("Preencha o nome da cliente e a data de entrega.");return;}
-    const itens=[];
-    iList.querySelectorAll(".irow").forEach(row=>{
-      const[n,v]=row.querySelectorAll("input");
-      if(n.value.trim()||v.value)itens.push({nome:n.value.trim(),valor:pv(v.value)});
+  document.getElementById("btnSalvar").onclick = () => {
+    const cliente = document.getElementById("fCliente").value.trim();
+    const data    = document.getElementById("fData").value;
+    if(!cliente || !data){ alert("Preencha o nome da cliente e a data de entrega."); return; }
+    const itens = [];
+    iList.querySelectorAll(".irow").forEach(row => {
+      const[n,v] = row.querySelectorAll("input");
+      if(n.value.trim() || v.value) itens.push({nome: n.value.trim(), valor: pv(v.value)});
     });
-    const total=itens.reduce((a,i)=>a+i.valor,0);
-    const status=document.querySelector("input[name=st]:checked").value;
-    const sinal=status==="sinal"?pv(document.getElementById("fSinal").value):0;
-    const recebido=status==="total"?total:sinal;
-    const aReceber=total-recebido;
-    const tema=document.getElementById("fTema").value.trim();
-    const obs=document.getElementById("fObs").value.trim();
-    const pedidos=load();
-    if(editId!==null){
-      const idx=pedidos.findIndex(p=>p.id===editId);
-      if(idx>-1)pedidos[idx]={...pedidos[idx],cliente,tema,data,itens,total,status,sinal,recebido,aReceber,obs};
-    }else{
-      pedidos.push({id:Date.now(),cliente,tema,data,itens,total,status,sinal,recebido,aReceber,obs});
+    const total    = itens.reduce((a,i) => a+i.valor, 0);
+    const status   = document.querySelector("input[name=st]:checked").value;
+    const sinal    = status === "sinal" ? pv(document.getElementById("fSinal").value) : 0;
+    const recebido = status === "total" ? total : sinal;
+    const aReceber = total - recebido;
+    const tema     = document.getElementById("fTema").value.trim();
+    const obs      = document.getElementById("fObs").value.trim();
+    const pedidos  = load();
+    if(editId !== null){
+      const idx = pedidos.findIndex(p => p.id === editId);
+      if(idx > -1) pedidos[idx] = {...pedidos[idx], cliente, tema, data, itens, total, status, sinal, recebido, aReceber, obs};
+    } else {
+      pedidos.push({id: Date.now(), cliente, tema, data, itens, total, status, sinal, recebido, aReceber, obs});
     }
     save(pedidos);
     resetForm();
     renderAll();
     document.querySelector('.tab[data-tab="ativos"]').click();
-    alert(editId!==null?"Pedido atualizado!":"Pedido salvo!");
+    alert(editId !== null ? "Pedido atualizado!" : "Pedido salvo!");
   };
 
   function editarPedido(id){
-    const p=load().find(x=>x.id===id);if(!p)return;
-    editId=id;
-    document.getElementById("fCliente").value=p.cliente;
-    document.getElementById("fTema").value=p.tema||"";
-    document.getElementById("fData").value=p.data;
-    document.getElementById("fObs").value=p.obs||"";
-    iList.innerHTML="";
-    (p.itens||[]).forEach(i=>addItemRow(i.nome,i.valor));
-    if(!iList.children.length)addItemRow();
-    const stEl=document.querySelector(`input[name=st][value="${p.status}"]`);
-    if(stEl)stEl.checked=true;
-    campoSinal.style.display=(p.status==="sinal")?"block":"none";
-    if(p.status==="sinal")document.getElementById("fSinal").value=p.sinal||"";
+    const p = load().find(x => x.id === id); if(!p) return;
+    editId = id;
+    document.getElementById("fCliente").value = p.cliente;
+    document.getElementById("fTema").value    = p.tema || "";
+    document.getElementById("fData").value    = p.data;
+    document.getElementById("fObs").value     = p.obs || "";
+    iList.innerHTML = "";
+    (p.itens || []).forEach(i => addItemRow(i.nome, i.valor));
+    if(!iList.children.length) addItemRow();
+    const stEl = document.querySelector(`input[name=st][value="${p.status}"]`);
+    if(stEl) stEl.checked = true;
+    campoSinal.style.display = (p.status === "sinal") ? "block" : "none";
+    if(p.status === "sinal") document.getElementById("fSinal").value = p.sinal || "";
     calcTotal();
-    document.getElementById("btnCancelar").style.display="inline-flex";
-    document.getElementById("btnSalvar").textContent="Atualizar pedido ✨";
+    document.getElementById("btnCancelar").style.display = "inline-flex";
+    document.getElementById("btnSalvar").textContent = "Atualizar pedido ✨";
     document.querySelector('.tab[data-tab="novo"]').click();
   }
 
   function excluirPedido(id){
-    if(!confirm("Excluir este pedido?"))return;
-    save(load().filter(x=>x.id!==id));
+    if(!confirm("Excluir este pedido?")) return;
+    save(load().filter(x => x.id !== id));
     renderAll();
   }
 
   function renderPedidos(){
-    const lista=load().sort((a,b)=>a.data.localeCompare(b.data));
-    const div=document.getElementById("listaOrders");
-    const msg=document.getElementById("msgVazia");
-    div.innerHTML="";
-    msg.style.display=lista.length?"none":"block";
-    const hoje=new Date();hoje.setHours(0,0,0,0);
-    lista.forEach(p=>{
-      const dataObj=parseLocal(p.data);
-      const dataFmt=dataObj.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
-      const diff=Math.ceil((dataObj-hoje)/86400000);
-      const urg=diff>=0&&diff<=3&&Number(p.aReceber)>0;
-      const card=document.createElement("article");card.className="ocard";
-      card.innerHTML=`
+    const lista = load().sort((a,b) => a.data.localeCompare(b.data));
+    const div   = document.getElementById("listaOrders");
+    const msg   = document.getElementById("msgVazia");
+    div.innerHTML = "";
+    msg.style.display = lista.length ? "none" : "block";
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+    lista.forEach(p => {
+      const dataObj  = parseLocal(p.data);
+      const dataFmt  = dataObj.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
+      const diff     = Math.ceil((dataObj - hoje) / 86400000);
+      const urg      = diff >= 0 && diff <= 3 && Number(p.aReceber) > 0;
+      const card     = document.createElement("article"); card.className = "ocard";
+      card.innerHTML = `
         <div class="ocard-head">
           <div class="ocard-client">${p.cliente}</div>
           <div class="ocard-date">Entrega: ${dataFmt}</div>
         </div>
         <div class="tags">
           <span class="tag">${p.tema||"Sem tema"}</span>
-          ${urg?'<span class="tag urg">⚡ URGENTE</span>':""}
+          ${urg ? '<span class="tag urg">⚡ URGENTE</span>' : ""}
           <span class="tag">${p.status==="pendente"?"Pendente":p.status==="sinal"?"Sinal pago":"Pago total"}</span>
         </div>
         <div class="money">
@@ -368,68 +368,68 @@
           <span><strong>Sinal:</strong> ${fmt(p.recebido)}</span>
           <span><strong>A receber:</strong> ${fmt(p.aReceber)}</span>
         </div>
-        ${p.itens&&p.itens.length?`<div class="notes">Itens: ${p.itens.map(i=>i.nome).join(", ")}</div>`:""}
-        ${p.obs?`<div class="notes">Obs.: ${p.obs}</div>`:""}
+        ${p.itens&&p.itens.length ? `<div class="notes">Itens: ${p.itens.map(i=>i.nome).join(", ")}</div>` : ""}
+        ${p.obs ? `<div class="notes">Obs.: ${p.obs}</div>` : ""}
         <div class="card-actions">
           <button class="btn-edit" data-id="${p.id}">✏️ Editar</button>
           <button class="btn-del" data-id="${p.id}">🗑️ Excluir</button>
         </div>`;
       div.appendChild(card);
     });
-    div.querySelectorAll(".btn-edit").forEach(b=>b.onclick=()=>editarPedido(Number(b.dataset.id)));
-    div.querySelectorAll(".btn-del").forEach(b=>b.onclick=()=>excluirPedido(Number(b.dataset.id)));
+    div.querySelectorAll(".btn-edit").forEach(b => b.onclick = () => editarPedido(Number(b.dataset.id)));
+    div.querySelectorAll(".btn-del").forEach(b  => b.onclick = () => excluirPedido(Number(b.dataset.id)));
   }
 
   function renderResumo(){
-    const lista=load();
-    let ab=0,urg=0,rec=0,arec=0;
-    const hoje=new Date();hoje.setHours(0,0,0,0);
-    lista.forEach(p=>{
-      const d=parseLocal(p.data);
-      const diff=Math.ceil((d-hoje)/86400000);
-      if(Number(p.aReceber)>0)ab++;
-      if(diff>=0&&diff<=3&&Number(p.aReceber)>0)urg++;
-      rec+=Number(p.recebido)||0;
-      arec+=Number(p.aReceber)||0;
+    const lista = load();
+    let ab=0, urg=0, rec=0, arec=0;
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+    lista.forEach(p => {
+      const d    = parseLocal(p.data);
+      const diff = Math.ceil((d - hoje) / 86400000);
+      if(Number(p.aReceber) > 0) ab++;
+      if(diff >= 0 && diff <= 3 && Number(p.aReceber) > 0) urg++;
+      rec  += Number(p.recebido) || 0;
+      arec += Number(p.aReceber) || 0;
     });
-    document.getElementById("rAbertos").textContent=ab;
-    document.getElementById("rUrgentes").textContent=urg;
-    document.getElementById("rRecebido").textContent=fmt(rec);
-    document.getElementById("rAReceber").textContent=fmt(arec);
+    document.getElementById("rAbertos").textContent  = ab;
+    document.getElementById("rUrgentes").textContent = urg;
+    document.getElementById("rRecebido").textContent = fmt(rec);
+    document.getElementById("rAReceber").textContent = fmt(arec);
   }
 
-  const FERIADOS=["01-01","21-04","01-05","07-09","12-10","02-11","15-11","25-12"];
-  const NDIAS=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+  const FERIADOS = ["01-01","21-04","01-05","07-09","12-10","02-11","15-11","25-12"];
+  const NDIAS    = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
 
   function renderSemana(){
-    const hoje=new Date();hoje.setHours(0,0,0,0);
-    const dow=hoje.getDay();
-    const seg=new Date(hoje);seg.setDate(hoje.getDate()-(dow===0?6:dow-1));
-    const dom=new Date(seg);dom.setDate(seg.getDate()+6);
-    document.getElementById("wPeriodo").textContent=
-      seg.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})+" a "+
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+    const dow  = hoje.getDay();
+    const seg  = new Date(hoje); seg.setDate(hoje.getDate() - (dow === 0 ? 6 : dow - 1));
+    const dom  = new Date(seg);  dom.setDate(seg.getDate() + 6);
+    document.getElementById("wPeriodo").textContent =
+      seg.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"}) + " a " +
       dom.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
-    const dias=[];
-    for(let i=0;i<7;i++){const d=new Date(seg);d.setDate(seg.getDate()+i);dias.push(d);}
-    const pedidos=load();
-    const wd=document.getElementById("wDays");wd.innerHTML="";
-    dias.forEach(d=>{
-      const key=toISO(d);
-      const ds=String(d.getDate()).padStart(2,"0")+"-"+String(d.getMonth()+1).padStart(2,"0");
-      const fer=FERIADOS.includes(ds);
-      const temP=pedidos.some(p=>p.data===key);
-      const cel=document.createElement("div");
-      cel.className="dcel"+(fer?" holiday":"")+(temP?" hasorder":"");
-      cel.innerHTML=`<div class="dn">${NDIAS[d.getDay()]}</div><div class="dd">${d.getDate()}</div><div class="dl">${fer?"Feriado":temP?"Entrega":""}</div>`;
+    const dias = [];
+    for(let i=0; i<7; i++){ const d = new Date(seg); d.setDate(seg.getDate()+i); dias.push(d); }
+    const pedidos = load();
+    const wd = document.getElementById("wDays"); wd.innerHTML = "";
+    dias.forEach(d => {
+      const key = toISO(d);
+      const ds  = String(d.getDate()).padStart(2,"0") + "-" + String(d.getMonth()+1).padStart(2,"0");
+      const fer = FERIADOS.includes(ds);
+      const temP = pedidos.some(p => p.data === key);
+      const cel = document.createElement("div");
+      cel.className = "dcel" + (fer ? " holiday" : "") + (temP ? " hasorder" : "");
+      cel.innerHTML = `<div class="dn">${NDIAS[d.getDay()]}</div><div class="dd">${d.getDate()}</div><div class="dl">${fer?"Feriado":temP?"Entrega":""}</div>`;
       wd.appendChild(cel);
     });
-    const wo=document.getElementById("wOrders");wo.innerHTML="";
-    const sem=pedidos.filter(p=>{const d=parseLocal(p.data);return d>=seg&&d<=dom;}).sort((a,b)=>a.data.localeCompare(b.data));
-    if(!sem.length){wo.innerHTML='<p class="helper">Nenhuma entrega nesta semana.</p>';return;}
-    sem.forEach(p=>{
-      const d=parseLocal(p.data);
-      const card=document.createElement("article");card.className="ocard";
-      card.innerHTML=`
+    const wo  = document.getElementById("wOrders"); wo.innerHTML = "";
+    const sem = pedidos.filter(p => { const d = parseLocal(p.data); return d >= seg && d <= dom; }).sort((a,b) => a.data.localeCompare(b.data));
+    if(!sem.length){ wo.innerHTML = '<p class="helper">Nenhuma entrega nesta semana.</p>'; return; }
+    sem.forEach(p => {
+      const d    = parseLocal(p.data);
+      const card = document.createElement("article"); card.className = "ocard";
+      card.innerHTML = `
         <div class="ocard-head">
           <div class="ocard-client">${p.cliente}</div>
           <div class="ocard-date">${d.toLocaleDateString("pt-BR",{weekday:"short",day:"2-digit",month:"2-digit"})}</div>
@@ -439,55 +439,55 @@
           <span><strong>Total:</strong> ${fmt(p.total)}</span>
           <span><strong>A receber:</strong> ${fmt(p.aReceber)}</span>
         </div>
-        ${p.itens&&p.itens.length?`<div class="notes">Itens: ${p.itens.map(i=>i.nome).join(", ")}</div>`:""}`;
+        ${p.itens&&p.itens.length ? `<div class="notes">Itens: ${p.itens.map(i=>i.nome).join(", ")}</div>` : ""}`;
       wo.appendChild(card);
     });
   }
 
-  function toggleSenha(id,btn){
-    const inp=document.getElementById(id);
-    const show=inp.type==="password";
-    inp.type=show?"text":"password";
-    btn.textContent=show?"Ocultar":"Mostrar";
+  function toggleSenha(id, btn){
+    const inp  = document.getElementById(id);
+    const show = inp.type === "password";
+    inp.type   = show ? "text" : "password";
+    btn.textContent = show ? "Ocultar" : "Mostrar";
   }
 
-  document.getElementById("btnAlterarSenha").onclick=()=>{
-    const atual=document.getElementById("senhaAtual").value.trim();
-    const nova=document.getElementById("senhaNova").value.trim();
-    const confirm=document.getElementById("senhaConfirm").value.trim();
-    const msgOk=document.getElementById("msgSenhaOk");
-    const msgErro=document.getElementById("msgSenhaErro");
-    msgOk.style.display="none";
-    msgErro.style.display="none";
-    if(!atual||!nova||!confirm){
-      msgErro.style.display="block";
-      msgErro.textContent="⚠️ Preencha todos os campos.";
+  document.getElementById("btnAlterarSenha").onclick = () => {
+    const atual    = document.getElementById("senhaAtual").value.trim();
+    const nova     = document.getElementById("senhaNova").value.trim();
+    const confirma = document.getElementById("senhaConfirm").value.trim();
+    const msgOk    = document.getElementById("msgSenhaOk");
+    const msgErro  = document.getElementById("msgSenhaErro");
+    msgOk.style.display   = "none";
+    msgErro.style.display = "none";
+    if(!atual || !nova || !confirma){
+      msgErro.style.display = "block";
+      msgErro.textContent   = "⚠️ Preencha todos os campos.";
       return;
     }
-    if(atual!==getSenhaAtual()){
-      msgErro.style.display="block";
-      msgErro.textContent="❌ Senha atual incorreta.";
+    if(atual !== getSenhaAtual()){
+      msgErro.style.display = "block";
+      msgErro.textContent   = "❌ Senha atual incorreta.";
       return;
     }
-    if(nova.length<6){
-      msgErro.style.display="block";
-      msgErro.textContent="⚠️ A nova senha precisa ter pelo menos 6 caracteres.";
+    if(nova.length < 6){
+      msgErro.style.display = "block";
+      msgErro.textContent   = "⚠️ A nova senha precisa ter pelo menos 6 caracteres.";
       return;
     }
-    if(nova!==confirm){
-      msgErro.style.display="block";
-      msgErro.textContent="❌ As senhas não coincidem.";
+    if(nova !== confirma){
+      msgErro.style.display = "block";
+      msgErro.textContent   = "❌ As senhas não coincidem.";
       return;
     }
-    localStorage.setItem(KEY_SENHA,nova);
-    msgOk.style.display="block";
-    document.getElementById("senhaAtual").value="";
-    document.getElementById("senhaNova").value="";
-    document.getElementById("senhaConfirm").value="";
-    setTimeout(()=>msgOk.style.display="none",3000);
+    localStorage.setItem(K_SENHA, nova);
+    msgOk.style.display = "block";
+    document.getElementById("senhaAtual").value  = "";
+    document.getElementById("senhaNova").value   = "";
+    document.getElementById("senhaConfirm").value = "";
+    setTimeout(() => msgOk.style.display = "none", 3000);
   };
 
-  function renderAll(){renderPedidos();renderResumo();if(!iList.children.length)addItemRow();}
+  function renderAll(){ renderPedidos(); renderResumo(); if(!iList.children.length) addItemRow(); }
   renderAll();
 </script>
 </body>
