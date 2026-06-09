@@ -33,7 +33,7 @@
 <div class="card">
   <img class="logo" src="/icon-atelie-512.png" alt="Ateliê em Dia"
     onerror="this.style.display='none';document.getElementById('logoFallback').style.display='flex'">
-  <div class="logo-fallback" id="logoFallback" style="display:none">📋</div>
+  <div class="logo-fallback" id="logoFallback" style="display:none">🎀</div>
   <h1>Ateliê em Dia</h1>
   <p class="sub">Seus pedidos organizados com carinho</p>
   <label for="senha">Senha de acesso</label>
@@ -49,6 +49,11 @@
   <p class="erro" id="erro"></p>
 </div>
 <script>
+  // Limpa senha antiga se ainda estiver salva
+  if(localStorage.getItem("atl_senha")==="orcamento123"){
+    localStorage.removeItem("atl_senha");
+  }
+
   function getSenha(){
     return localStorage.getItem("atl_senha")||"atelie123";
   }
