@@ -49,47 +49,49 @@
   <p class="erro" id="erro"></p>
 </div>
 <script>
-  // Limpa senha antiga se ainda estiver salva
-  if(localStorage.getItem("atl_senha")==="orcamento123"){
-    localStorage.removeItem("atl_senha");
-  }
+  // Chaves exclusivas do Ateliê em Dia
+  const K_SENHA  = "atelie_senha";
+  const K_AUTH   = "atelie_auth";
+  const K_LEMB   = "atelie_lembrar";
+  const K_S      = "atelie_s";
+  const SENHA_PAD = "atelie123";
 
   function getSenha(){
-    return localStorage.getItem("atl_senha")||"atelie123";
+    return localStorage.getItem(K_SENHA) || SENHA_PAD;
   }
 
-  const inp=document.getElementById("senha");
-  const chk=document.getElementById("lembrar");
-  const erro=document.getElementById("erro");
+  const inp  = document.getElementById("senha");
+  const chk  = document.getElementById("lembrar");
+  const erro = document.getElementById("erro");
 
-  if(localStorage.getItem("atl_lembrar")==="1"){
-    chk.checked=true;
-    inp.value=localStorage.getItem("atl_s")||"";
+  if(localStorage.getItem(K_LEMB) === "1"){
+    chk.checked = true;
+    inp.value = localStorage.getItem(K_S) || "";
   }
 
-  document.getElementById("toggle").onclick=function(){
-    const show=inp.type==="password";
-    inp.type=show?"text":"password";
-    this.textContent=show?"Ocultar":"Mostrar";
+  document.getElementById("toggle").onclick = function(){
+    const show = inp.type === "password";
+    inp.type = show ? "text" : "password";
+    this.textContent = show ? "Ocultar" : "Mostrar";
   };
 
-  document.getElementById("entrar").onclick=entrar;
-  inp.onkeydown=e=>{if(e.key==="Enter")entrar();};
+  document.getElementById("entrar").onclick = entrar;
+  inp.onkeydown = e => { if(e.key === "Enter") entrar(); };
 
   function entrar(){
-    const s=inp.value.trim();
-    if(!s){erro.textContent="Digite a senha.";return;}
-    if(s!==getSenha()){erro.textContent="Senha incorreta.";return;}
-    erro.textContent="";
+    const s = inp.value.trim();
+    if(!s){ erro.textContent = "Digite a senha."; return; }
+    if(s !== getSenha()){ erro.textContent = "Senha incorreta."; return; }
+    erro.textContent = "";
     if(chk.checked){
-      localStorage.setItem("atl_lembrar","1");
-      localStorage.setItem("atl_s",s);
-    }else{
-      localStorage.removeItem("atl_lembrar");
-      localStorage.removeItem("atl_s");
+      localStorage.setItem(K_LEMB, "1");
+      localStorage.setItem(K_S, s);
+    } else {
+      localStorage.removeItem(K_LEMB);
+      localStorage.removeItem(K_S);
     }
-    localStorage.setItem("atl_auth","1");
-    window.location.href="/atelie";
+    localStorage.setItem(K_AUTH, "1");
+    window.location.href = "/atelie";
   }
 </script>
 </body>
